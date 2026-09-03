@@ -1,0 +1,115 @@
+.timer-display {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.timer-display-logos {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.timer-logo {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+  display: none;
+}
+
+.timer-logo:hover {
+  opacity: 1;
+}
+
+.timer-display-time {
+  font-size: clamp(64px, 12vw, 160px);
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--transition-normal);
+  text-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.timer-display-time.running {
+  color: var(--color-primary-light);
+}
+
+.timer-display-time.paused {
+  color: var(--color-warning);
+}
+
+.timer-display-time.finished {
+  color: var(--color-success);
+}
+
+.timer-display-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-text-muted);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+.timer-display-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+
+.timer-display-status.running .timer-display-status-dot {
+  background: var(--color-primary-light);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.timer-display-status.running {
+  color: var(--color-primary-light);
+}
+
+.timer-display-status.paused .timer-display-status-dot {
+  background: var(--color-warning);
+}
+
+.timer-display-status.paused {
+  color: var(--color-warning);
+}
+
+.timer-display-status.finished .timer-display-status-dot {
+  background: var(--color-success);
+}
+
+.timer-display-status.finished {
+  color: var(--color-success);
+}
+
+.timer-display-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  max-width: 400px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}

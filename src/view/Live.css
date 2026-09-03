@@ -1,0 +1,23 @@
+html.live-page-body,
+.live-page-body {
+  background: transparent !important;
+}
+
+.live-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: transparent;
+}
+
+.live-page .timer-display-time {
+  font-size: clamp(100px, 18vw, 260px);
+  text-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+.live-page .timer-logo {
+  height: 56px;
+}

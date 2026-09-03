@@ -1,0 +1,261 @@
+.config-panel {
+  width: 340px;
+  min-width: 340px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-left: 1px solid var(--glass-border);
+  overflow-y: auto;
+  animation: fadeInUp 0.3s ease;
+}
+
+.config-panel-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.config-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-text);
+}
+
+.config-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 20px;
+}
+
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.config-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.config-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+}
+
+.config-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.config-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.config-radio-item input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border-light);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.config-radio-item input[type="radio"]:checked {
+  border-color: var(--color-primary);
+}
+
+.config-radio-item input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.config-radio-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.config-radio-item:hover .config-radio-label {
+  color: var(--color-text);
+}
+
+.config-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.config-checkbox-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border-light);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.config-checkbox-item input[type="checkbox"]:checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.config-checkbox-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.config-checkbox-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.config-checkbox-item:hover .config-checkbox-label {
+  color: var(--color-text);
+}
+
+.config-text-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: 13px;
+  padding: 0 12px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.config-text-input:focus {
+  border-color: var(--color-primary);
+}
+
+.config-text-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.config-panel-footer {
+  padding: 16px 20px 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.config-btn {
+  flex: 1;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.config-btn:active {
+  transform: scale(0.97);
+}
+
+.config-btn-start {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.config-btn-start:hover {
+  background: #059669;
+}
+
+.config-btn-pause {
+  background: var(--color-warning);
+  color: #000;
+}
+
+.config-btn-pause:hover {
+  background: #d97706;
+}
+
+.config-btn-resume {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.config-btn-resume:hover {
+  background: var(--color-primary-hover);
+}
+
+.config-btn-reset {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.config-btn-reset:hover {
+  background: #e11d48;
+}
+
+.config-running-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-glow);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary-light);
+}
+
+.config-running-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  animation: pulse 1.5s ease-in-out infinite;
+}
