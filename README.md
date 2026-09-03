@@ -28,24 +28,46 @@ Temporizador visual com segunda tela embutida, ideal para a Rádio/TV Pelotense 
 # instalar dependências
 npm install
 
-# rodar em desenvolvimento
+# rodar em desenvolvimento (frontend apenas, sem sync entre navegadores)
 npm run dev
 
 # build de produção
 npm run build
 
-# pré-visualizar o build
-npm run preview
+# construir + subir o servidor (estático + sincronização WebSocket)
+npm start
+
+# ou apenas subir o servidor sem rebuild
+npm run server
 ```
 
-Abra as rotas em abas/janelas separadas do mesmo navegador para ver a sincronização em tempo real entre `/` e `/retorno` (ou `/live`).
+O servidor (em `server/index.mjs`) serve o build estático e mantém a conexão WebSocket em `/ws`.
+
+## Sincronização
+
+**Mesmo navegador (abas/janelas):** usa `BroadcastChannel` + `localStorage` — funciona até rodando só com `npm run dev`, sem servidor.
+
+**Entre navegadores/máquinas diferentes** (ex.: Chrome no controle e Edge/OBS na tela): é preciso que as páginas sejam servidas pelo **servidor WebSocket** (`npm start` ou `npm run server`), todos apontando para o mesmo host/porta. O servidor recebe o estado do timer e faz broadcast em tempo real para todos os clientes conectados.
+
+### Como usar no OBS / outra máquina
+
+1. Rode `npm start` no computador que terá o controle (ex.: `http://MEU_IP:3000`).
+2. No navegador de controle, abra `http://MEU_IP:3000/`.
+3. Nas telas secundárias (OBS Browser Source, outro navegador ou outra máquina na mesma rede), aponte para:
+   - `http://MEU_IP:3000/retorno` — tela cheia com fundo
+   - `http://MEU_IP:3000/live` — tela cheia transparente (para sobrepor a uma transmissão)
+
+Todas as telas sincronizam a contagem a partir do mesmo `endAt`, sem delay.
+
+> Dica: para acesso de outras máquinas fora da rede local, use um endereço público/HTTPS (o cliente detecta automaticamente `wss://` quando a página está em HTTPS).
 
 ## Estrutura
 
 ```
+server/               # servidor Node (Express + WebSocket) para sync entre navegadores
 src/
 ├── components/       # TimerDisplay, ConfigPanel, PresetButtons, TimeInput, AddTimeInput
-├── hooks/            # useTimer, useStoredTimer, storage (persistência + broadcast)
+├── hooks/            # useTimer, useStoredTimer, storage, syncClient (WebSocket)
 ├── types/            # tipos do timer e configuração
 ├── view/             # páginas de segunda tela (Return, Live)
 ├── App.tsx           # página raiz
@@ -57,4 +79,5 @@ src/
 - React 18
 - Vite 5
 - TypeScript
+- Node + Express + WebSocket (`ws`)
 - Web API: `BroadcastChannel`, `localStorage`

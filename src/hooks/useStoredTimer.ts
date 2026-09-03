@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { TimerConfig, TimerStatus } from '../types/timer'
 import { DEFAULT_CONFIG } from '../types/timer'
 import { STORAGE_KEY, SYNC_CHANNEL, loadStorage, type TimerStorage } from './storage'
+import { syncClient, type SyncState } from './syncClient'
 
 interface MirrorState {
   totalSeconds: number
@@ -84,6 +85,29 @@ export function useStoredTimer() {
       channel?.close()
       window.removeEventListener('storage', onStorage)
     }
+  }, [])
+
+  useEffect(() => {
+    syncClient.init()
+
+    const applyServer = (data: SyncState) => {
+      const mirrored: MirrorState = {
+        totalSeconds: data.totalSeconds,
+        remainingSeconds: data.remainingSeconds,
+        status: data.status as TimerStatus,
+        config: (data.config ?? DEFAULT_CONFIG) as unknown as TimerConfig,
+        endAt: data.endAt,
+      }
+      setState(mirrored)
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mirrored))
+      } catch {
+        // ignore
+      }
+    }
+
+    const unsubscribe = syncClient.subscribe(applyServer)
+    return unsubscribe
   }, [])
 
   useEffect(() => {

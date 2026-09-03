@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import type { TimerStatus, TimerConfig, FinishAction } from '../types/timer'
 import { DEFAULT_CONFIG } from '../types/timer'
 import { loadStorage, saveStorage, type TimerStorage } from './storage'
+import { syncClient, type SyncState } from './syncClient'
 
 export interface UseTimerReturn {
   totalSeconds: number
@@ -199,12 +200,20 @@ export function useTimer(): UseTimerReturn {
   }, [status, applyRemaining, finishRun])
 
   useEffect(() => {
+    syncClient.init()
+
+    const publish = () => {
+      const snap = snapshot()
+      syncClient.publish(snap as unknown as SyncState)
+    }
+
     const id = window.setInterval(() => {
       persistNow()
       broadcastNow()
-    }, 500)
+      publish()
+    }, 100)
     return () => clearInterval(id)
-  }, [persistNow, broadcastNow])
+  }, [persistNow, broadcastNow, snapshot])
 
   useEffect(() => {
     if (typeof BroadcastChannel !== 'undefined') {
