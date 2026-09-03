@@ -9,7 +9,7 @@ export interface TimerConfig {
 }
 
 export const PRESET_VALUES = [
-  0.5, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35,
+  0.5, 2, 3, 5, 20, 60,
 ] as const;
 
 export type PresetValue = (typeof PRESET_VALUES)[number];

@@ -5,9 +5,9 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background: radial-gradient(ellipse at 30% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 80%, rgba(56, 189, 248, 0.04) 0%, transparent 50%),
-              var(--color-bg);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+    url('../imgs/Background.png') center / cover no-repeat;
 }
 
 .view-page .timer-display-time {

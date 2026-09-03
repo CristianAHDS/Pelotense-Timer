@@ -34,6 +34,7 @@
 }
 
 .timer-display-time {
+  font-family: var(--font-display);
   font-size: clamp(64px, 12vw, 160px);
   font-weight: 800;
   letter-spacing: 4px;

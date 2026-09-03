@@ -36,6 +36,7 @@
   --radius-xl: 20px;
 
   --font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 }
