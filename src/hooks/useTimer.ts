@@ -36,7 +36,7 @@ export function useTimer(): UseTimerReturn {
 
   const initialState = useRef(
     stored && stored.status === 'running' && stored.endAt !== null
-      ? Math.max(0, Math.ceil((stored.endAt - Date.now()) / 1000))
+      ? Math.max(0, Math.floor((stored.endAt - Date.now()) / 1000))
       : (stored?.remainingSeconds ?? 0)
   )
 
@@ -65,7 +65,7 @@ export function useTimer(): UseTimerReturn {
   const snapshot = useCallback((): TimerStorage => {
     const rem =
       statusRef.current === 'running' && endAtRef.current !== null
-        ? Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000))
+        ? Math.max(0, Math.floor((endAtRef.current - Date.now()) / 1000))
         : remainingRef.current
     return {
       totalSeconds: totalRef.current,
@@ -76,13 +76,17 @@ export function useTimer(): UseTimerReturn {
     }
   }, [])
 
+  const withClock = useCallback((state: TimerStorage) => {
+    return { ...state, sentAt: Date.now() }
+  }, [])
+
   const broadcastNow = useCallback(() => {
     try {
-      channelRef.current?.postMessage(JSON.stringify(snapshot()))
+      channelRef.current?.postMessage(JSON.stringify(withClock(snapshot())))
     } catch {
       // channel may not be available
     }
-  }, [snapshot])
+  }, [snapshot, withClock])
 
   const persistNow = useCallback(() => {
     saveStorage(snapshot())
@@ -180,7 +184,7 @@ export function useTimer(): UseTimerReturn {
     if (status === 'running' && endAtRef.current !== null) {
       intervalRef.current = window.setInterval(() => {
         if (endAtRef.current === null) return
-        const remaining = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000))
+        const remaining = Math.max(0, Math.floor((endAtRef.current - Date.now()) / 1000))
         if (remaining <= 0) {
           clearInterval(intervalRef.current ?? undefined)
           intervalRef.current = null
@@ -204,7 +208,7 @@ export function useTimer(): UseTimerReturn {
 
     const publish = () => {
       const snap = snapshot()
-      syncClient.publish(snap as unknown as SyncState)
+      syncClient.publish(withClock(snap) as unknown as SyncState)
     }
 
     const id = window.setInterval(() => {

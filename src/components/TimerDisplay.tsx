@@ -8,13 +8,6 @@ interface TimerDisplayProps {
   showMessage?: boolean;
 }
 
-const STATUS_LABELS: Record<TimerStatus, string> = {
-  idle: 'Pronto',
-  running: 'Em execução',
-  paused: 'Pausado',
-  finished: 'Finalizado',
-};
-
 export function TimerDisplay({
   formattedTime,
   status,
@@ -28,10 +21,6 @@ export function TimerDisplay({
         <img src="/ahoradosul.png" alt="A Hora do Sul" className="timer-logo" />
       </div>
       <div className={`timer-display-time ${status}`}>{formattedTime}</div>
-      <div className={`timer-display-status ${status}`}>
-        <span className="timer-display-status-dot" />
-        {STATUS_LABELS[status]}
-      </div>
       {showMessage && title && (
         <div className="timer-display-title">{title}</div>
       )}

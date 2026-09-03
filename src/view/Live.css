@@ -18,6 +18,11 @@ html.live-page-body,
   text-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
 }
 
+.live-page .timer-display-time.idle,
+.live-page .timer-display-time.running {
+  color: #2e518a !important;
+}
+
 .live-page .timer-logo {
   height: 56px;
 }

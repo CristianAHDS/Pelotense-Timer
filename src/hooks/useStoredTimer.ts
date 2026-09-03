@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { TimerConfig, TimerStatus } from '../types/timer'
 import { DEFAULT_CONFIG } from '../types/timer'
 import { STORAGE_KEY, SYNC_CHANNEL, loadStorage, type TimerStorage } from './storage'
@@ -10,6 +10,10 @@ interface MirrorState {
   status: TimerStatus
   config: TimerConfig
   endAt: number | null
+}
+
+interface SyncPayload extends TimerStorage {
+  sentAt?: number
 }
 
 function readStored(): MirrorState {
@@ -25,7 +29,7 @@ function readStored(): MirrorState {
   }
 
   if (data.status === 'running' && data.endAt !== null) {
-    const remaining = Math.max(0, Math.ceil((data.endAt - Date.now()) / 1000))
+    const remaining = Math.max(0, Math.floor((data.endAt - Date.now()) / 1000))
     if (remaining <= 0) {
       return { ...data, status: 'finished', remainingSeconds: 0, endAt: null }
     }
@@ -34,12 +38,24 @@ function readStored(): MirrorState {
   return data
 }
 
-function parsePayload(raw: string): TimerStorage | null {
+function parsePayload(raw: string): SyncPayload | null {
   try {
-    return JSON.parse(raw) as TimerStorage
+    return JSON.parse(raw) as SyncPayload
   } catch {
     return null
   }
+}
+
+/**
+ * Computes the clock offset between this device and the master: `sentAt` was
+ * stamped with the master's clock, `Date.now()` with ours. The difference is
+ * the offset we must *subtract* from the master's `endAt` (converting it to
+ * our clock) so both devices count down from the same instant regardless of
+ * their clock skew.
+ */
+function computeOffset(data: SyncPayload): number {
+  if (typeof data.sentAt !== 'number') return 0
+  return data.sentAt - Date.now()
 }
 
 /**
@@ -49,6 +65,27 @@ function parsePayload(raw: string): TimerStorage | null {
  */
 export function useStoredTimer() {
   const [state, setState] = useState<MirrorState>(readStored)
+  const offsetRef = useRef(0)
+
+  const applyPayload = (data: SyncPayload) => {
+    offsetRef.current = computeOffset(data)
+
+    const effectiveEndAt = data.endAt !== null ? data.endAt - offsetRef.current : null
+    const remaining =
+      effectiveEndAt !== null
+        ? Math.max(0, Math.floor((effectiveEndAt - Date.now()) / 1000))
+        : data.remainingSeconds
+
+    const mirrored: MirrorState = {
+      totalSeconds: data.totalSeconds,
+      remainingSeconds: remaining,
+      status: data.status,
+      config: data.config,
+      endAt: effectiveEndAt,
+    }
+    setState(mirrored)
+    return mirrored
+  }
 
   useEffect(() => {
     let channel: BroadcastChannel | null = null
@@ -57,16 +94,9 @@ export function useStoredTimer() {
       channel.onmessage = (e: MessageEvent) => {
         const data = parsePayload(e.data as string)
         if (data) {
-          const mirrored: MirrorState = {
-            totalSeconds: data.totalSeconds,
-            remainingSeconds: data.remainingSeconds,
-            status: data.status,
-            config: data.config,
-            endAt: data.endAt,
-          }
-          setState(mirrored)
+          const mirrored = applyPayload(data)
           try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(mirrored))
           } catch {
             // ignore
           }
@@ -85,20 +115,14 @@ export function useStoredTimer() {
       channel?.close()
       window.removeEventListener('storage', onStorage)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     syncClient.init()
 
     const applyServer = (data: SyncState) => {
-      const mirrored: MirrorState = {
-        totalSeconds: data.totalSeconds,
-        remainingSeconds: data.remainingSeconds,
-        status: data.status as TimerStatus,
-        config: (data.config ?? DEFAULT_CONFIG) as unknown as TimerConfig,
-        endAt: data.endAt,
-      }
-      setState(mirrored)
+      const mirrored = applyPayload(data as unknown as SyncPayload)
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(mirrored))
       } catch {
@@ -108,6 +132,7 @@ export function useStoredTimer() {
 
     const unsubscribe = syncClient.subscribe(applyServer)
     return unsubscribe
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -116,7 +141,7 @@ export function useStoredTimer() {
     const id = window.setInterval(() => {
       setState((prev) => {
         if (prev.status !== 'running' || prev.endAt === null) return prev
-        const next = Math.max(0, Math.ceil((prev.endAt - Date.now()) / 1000))
+        const next = Math.max(0, Math.floor((prev.endAt - Date.now()) / 1000))
         if (next <= 0) {
           return { ...prev, status: 'finished', remainingSeconds: 0, endAt: null }
         }

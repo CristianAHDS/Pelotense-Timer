@@ -20,7 +20,7 @@ export function PresetButtons({ activePreset, disabled, onSelect }: PresetButton
             disabled={disabled}
             type="button"
           >
-            <span className="preset-btn-label">{min}m</span>
+            <span className="preset-btn-label">{min === 0.5 ? '30s' : `${min}m`}</span>
           </button>
         ))}
       </div>
